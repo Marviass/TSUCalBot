@@ -138,16 +138,12 @@ def handle_save(c):
 from threading import Thread
 
 def run_bot():
-    print("🤖 Попытка запуска бота в фоновом потоке...")
-    while True:
-        try:
-            bot.remove_webhook()
-            print("✅ Бот успешно подключился к Telegram")
-            bot.polling(none_stop=True, interval=0, timeout=20)
-        except Exception as e:
-            print(f"❌ Ошибка в потоке бота: {e}")
-            import time
-            time.sleep(5)
+    print("🤖 Запуск polling...")
+    try:
+        # Пробуем запуститься без удаления вебхука (иногда это мешает)
+        bot.polling(none_stop=True)
+    except Exception as e:
+        print(f"❌ Критическая ошибка: {e}")
 
 # Запускаем поток сразу при импорте файла сервером
 bot_thread = Thread(target=run_bot, daemon=True)
@@ -157,3 +153,4 @@ bot_thread.start()
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
+
