@@ -11,7 +11,7 @@ from threading import Thread
 # === НАСТРОЙКИ ===
 BOT_TOKEN = "8725292945:AAGB9vH7bhf448PUedHSEQYD9Bk2vi-30jY"
 # Если запускаешь локально, оставь так. На хостинге замени на реальный домен.
-BASE_URL = "http://твой-айпи-или-домен.com" 
+BASE_URL = "https://tsucalbot.onrender.com" 
 
 bot = telebot.TeleBot(BOT_TOKEN)
 app = Flask(__name__)
@@ -137,8 +137,21 @@ def run_bot():
     bot.infinity_polling()
 
 if __name__ == "__main__":
-    # Запускаем бота в отдельном потоке
-    Thread(target=run_bot).start()
-    # Запускаем веб-сервер
-    print(f"🚀 Сервер запущен на {BASE_URL}")
-    app.run(host='0.0.0.0', port=5000)
+    # 1. Запускаем бота в отдельном потоке
+    from threading import Thread
+    def run_bot():
+        print("🤖 Бот запускается...")
+        while True:
+            try:
+                bot.infinity_polling()
+            except Exception as e:
+                print(f"Ошибка бота: {e}")
+                import time
+                time.sleep(5)
+
+    Thread(target=run_bot, daemon=True).start()
+
+    # 2. Запускаем Flask на порту, который даст Render
+    port = int(os.environ.get("PORT", 5000))
+    print(f"🚀 Веб-сервер запущен на порту {port}")
+    app.run(host='0.0.0.0', port=port)
