@@ -135,28 +135,25 @@ def handle_save(c):
 
 # === ЗАПУСК ===
 
+from threading import Thread
+
 def run_bot():
-    print("🤖 Бот запускается...")
+    print("🤖 Попытка запуска бота в фоновом потоке...")
     while True:
         try:
-            bot.remove_webhook() # Очистка старых соединений
+            bot.remove_webhook()
+            print("✅ Бот успешно подключился к Telegram")
             bot.polling(none_stop=True, interval=0, timeout=20)
         except Exception as e:
-            print(f"❌ Ошибка бота: {e}")
+            print(f"❌ Ошибка в потоке бота: {e}")
             import time
             time.sleep(5)
 
+# Запускаем поток сразу при импорте файла сервером
+bot_thread = Thread(target=run_bot, daemon=True)
+bot_thread.start()
+
+# Оставляем это для локальных тестов, но Render будет использовать объект 'app' напрямую
 if __name__ == "__main__":
-    # Запускаем бота в отдельном "потоке", чтобы он не мешал веб-серверу
-    from threading import Thread
-    thread = Thread(target=run_bot)
-    thread.daemon = True # Поток умрет вместе с основным процессом
-    thread.start()
-
-    # Запускаем Flask на порту Render
     port = int(os.environ.get("PORT", 10000))
-    print(f"🚀 Веб-сервер запущен на порту {port}")
     app.run(host='0.0.0.0', port=port)
-
-
-
