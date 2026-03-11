@@ -156,10 +156,8 @@ if __name__ == "__main__":
     bot_thread = Thread(target=run_bot, daemon=True)
     bot_thread.start()
 
-    # 2. Запускаем веб-сервер (без Gunicorn)
+    # 2. Запускаем веб-сервер
     port = int(os.environ.get("PORT", 10000))
     print(f"🚀 Веб-сервер запущен на порту {port}")
-    app.run(host='0.0.0.0', port=port)et("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
-
 
